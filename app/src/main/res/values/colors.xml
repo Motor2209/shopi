@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#272525</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="buttonOn">#0B1C1A</color>
+    <color name="buttonOf">#007367</color>
+    <color name="overDue_noOne">#403F3F</color>
+    <color name="overDue_Red">#605D5D</color>
+</resources>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="110dp"
+    android:background="#403F3F"
+    android:padding="2dp">
+
+    <TextView
+        android:id="@+id/tv_product_name"
+        style="@android:style/Widget.DeviceDefault.Light.TextView"
+        android:layout_width="133dp"
+        android:layout_height="78dp"
+        android:fontFamily="@font/arimo"
+        android:shadowColor="#FAF6F6"
+        android:textColor="#C4CED6"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_product_amount"
+        android:layout_width="150dp"
+        android:layout_height="24dp"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="55dp"
+
+        android:layout_marginBottom="78dp"
+        android:fontFamily="@font/arimo"
+
+        android:paddingRight="10dp"
+        android:textColor="#C4CED6"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tv_product_expiration"
+        android:layout_width="150dp"
+        android:layout_height="24dp"
+        android:layout_gravity="right|top"
+       android:layout_marginTop="36dp"
+        android:layout_marginRight="55dp"
+        android:fontFamily="@font/arimo"
+        android:paddingRight="10dp"
+        android:textColor="#C4CED6"
+        android:textSize="14sp" />
+
+    <Button
+    android:id="@+id/tv_button_edit"
+    android:layout_width="52dp"
+    android:layout_height="33dp"
+    android:layout_gravity="right|top"
+    android:background="#292626"
+    android:text="Edit"
+    android:textColor="#DBEF0F"
+    android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/tv_button_delete"
+        android:layout_width="52dp"
+        android:layout_height="20dp"
+        android:layout_gravity="right"
+        android:layout_marginTop="78dp"
+        android:background="#B32E2B"
+        android:text="Delete"
+        android:textColor="#DBEF0F"
+        android:textSize="10sp" />
+
+    <Button
+        android:id="@+id/tv_button_DONE"
+        android:layout_width="40dp"
+        android:layout_height="20dp"
+        android:layout_gravity="right"
+        android:layout_marginTop="53dp"
+        android:background="#E34642"
+        android:text="Done"
+        android:textColor="#DBEF0F"
+        android:textSize="12sp" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="bottom"
+        android:background="#C4CED6" />
+
+    <TextView
+        android:id="@+id/tv_product_overdue"
+        android:layout_width="150dp"
+        android:layout_height="24dp"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="55dp"
+        android:layout_marginBottom="12dp"
+        android:fontFamily="@font/arimo"
+
+        android:paddingRight="10dp"
+        android:textColor="#C4CED6" />
+
+    <ImageView
+        android:id="@+id/imageViewDone"
+
+        android:layout_width="15dp"
+        android:layout_height="16dp"
+        android:layout_marginLeft="298dp"
+        android:layout_marginTop="53dp"
+        app:srcCompat="@android:drawable/ic_menu_edit" />
+</FrameLayout>

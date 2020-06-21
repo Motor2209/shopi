@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/abeezee</item>
+        <item>@font/actor</item>
+        <item>@font/akronim</item>
+        <item>@font/amiri</item>
+        <item>@font/arimo</item>
+        <item>@font/brawler</item>
+        <item>@font/montserrat</item>
+        <item>@font/quattrocento_sans</item>
+        <item>@font/roboto_thin</item>
+        <item>@font/sevillana</item>
+        <item>@font/sorts_mill_goudy</item>
+    </array>
+</resources>

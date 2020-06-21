@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#534D4D">
+
+
+    <EditText
+        android:id="@+id/edit_name_shop"
+        android:layout_width="257dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="30dp"
+        android:background="#333232"
+        android:textColor="#03AA99" />
+
+    <EditText
+        android:id="@+id/edit_latitude"
+        android:layout_width="165dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="80dp"
+        android:background="#333232"
+        android:inputType="numberDecimal"
+        android:textColor="#03AA99" />
+
+    <EditText
+    android:id="@+id/edit_longitude"
+    android:layout_width="167dp"
+    android:layout_height="30dp"
+    android:layout_marginLeft="32dp"
+    android:layout_marginTop="130dp"
+    android:background="#333232"
+    android:inputType="numberDecimal"
+    android:textColor="#03AA99" />
+
+    <EditText
+        android:id="@+id/edit_area_Size"
+        android:layout_width="167dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="180dp"
+        android:background="#333232"
+        android:inputType="numberSigned"
+        android:textColor="#03AA99" />
+
+    <Button
+        android:id="@+id/button_accept_shop"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:layout_marginLeft="110dp"
+        android:layout_marginTop="230dp"
+
+        android:background="#1C781F"
+        android:text="accept"
+        android:textColor="#D6CECE" />
+
+
+    <Button
+        android:id="@+id/button_cancel_shop"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:layout_marginLeft="212dp"
+        android:layout_marginTop="230dp"
+        android:background="#CA3D3D"
+        android:text="cancel"
+        android:textColor="#D6CDCD" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="center_vertical"
+        android:background="#C4CED6" />
+
+    <Button
+        android:id="@+id/button_close_shop"
+        android:layout_width="32dp"
+        android:layout_height="23dp"
+        android:layout_marginLeft="290dp"
+        android:background="#CA3D3D"
+        android:text="X"
+        android:textColor="#DDD5D5" />
+
+
+    <TextView
+        android:layout_width="70dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="10dp"
+
+        android:text="name"
+        android:textColor="#B8B0B0" />
+
+    <TextView
+        android:layout_width="70dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="60dp"
+
+        android:text="latitude"
+        android:textColor="#B8B0B0" />
+
+    <TextView
+        android:layout_width="70dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="110dp"
+
+        android:text="longitude"
+        android:textColor="#B8B0B0" />
+
+    <TextView
+        android:layout_width="70dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="160dp"
+
+        android:text="area size"
+        android:textColor="#B8B0B0" />
+
+</FrameLayout>

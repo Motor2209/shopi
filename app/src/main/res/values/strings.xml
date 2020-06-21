@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">SHOPI</string>
+    <string name="hello">Hello!</string>
+    <string name="input_id">Input id</string>
+    <string name="search">search</string>
+    <string name="rezult_isHere" />
+    <string name="rezultat">rezultat</string>
+    <string name="baseURL">"https://da1180754f81.ngrok.io"</string>
+</resources>

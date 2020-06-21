@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="110dp"
+    android:background="#403F3F"
+    android:padding="2dp">
+
+    <TextView
+        android:id="@+id/tv_shop_name"
+        style="@android:style/Widget.DeviceDefault.Light.TextView"
+        android:layout_width="133dp"
+        android:layout_height="78dp"
+        android:fontFamily="@font/arimo"
+        android:shadowColor="#FAF6F6"
+        android:textColor="#C4CED6"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_shop_longitude"
+        android:layout_width="150dp"
+        android:layout_height="24dp"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="55dp"
+        android:layout_marginBottom="45dp"
+        android:fontFamily="@font/arimo"
+
+        android:paddingRight="10dp"
+        android:textColor="#C4CED6" />
+
+    <TextView
+        android:id="@+id/tv_shop_latitude"
+        android:layout_width="152dp"
+        android:layout_height="24dp"
+        android:layout_gravity="right|top"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="55dp"
+        android:fontFamily="@font/arimo"
+        android:paddingRight="10dp"
+        android:textColor="#C4CED6"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/tv_button_edit_shop"
+        android:layout_width="52dp"
+        android:layout_height="33dp"
+        android:layout_gravity="right|top"
+        android:background="#292626"
+        android:text="Edit"
+        android:textColor="#DBEF0F"
+        android:textSize="12sp" />
+
+
+    <Button
+        android:id="@+id/tv_button_delete_shop"
+        android:layout_width="52dp"
+        android:layout_height="20dp"
+        android:layout_gravity="right"
+        android:layout_marginTop="78dp"
+        android:background="#B32E2B"
+        android:text="Delete"
+        android:textColor="#DBEF0F"
+        android:textSize="10sp" />
+
+    <ImageView
+        android:id="@+id/imageView_2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="bottom"
+        android:background="#C4CED6" />
+
+    <TextView
+        android:id="@+id/tv_shop_areaSize"
+        android:layout_width="150dp"
+        android:layout_height="24dp"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="55dp"
+        android:layout_marginBottom="12dp"
+        android:fontFamily="@font/arimo"
+
+        android:paddingRight="10dp"
+        android:textColor="#C4CED6" />
+</FrameLayout>
