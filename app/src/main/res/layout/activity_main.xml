@@ -108,7 +108,7 @@
 
         android:layout_gravity="center_vertical|center"
         android:visibility="visible"
-        app:srcCompat="@drawable/imgonline_com_ua_shape_qflxgjbauduwdl" />
+        app:srcCompat="@drawable/logo2" />
 
 
 </FrameLayout>

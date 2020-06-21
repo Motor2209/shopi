@@ -13,10 +13,10 @@
 
     <ImageView
         android:layout_width="45dp"
-        android:layout_height="18dp"
-        android:layout_marginLeft="10dp"
+        android:layout_height="35dp"
+        android:layout_marginLeft="12dp"
         android:layout_marginRight="10dp"
-        app:srcCompat="@drawable/logoshopi" />
+        app:srcCompat="@drawable/logoshopinew2" />
 
 
 </androidx.appcompat.widget.Toolbar>

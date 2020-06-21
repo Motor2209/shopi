@@ -670,7 +670,7 @@ public void setVisibilityForAlarm(){
 //        recyclerView.setAdapter(adapterShop);
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://da1180754f81.ngrok.io")
+                .baseUrl("https://98fb504d0a08.ngrok.io")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -786,7 +786,7 @@ public void setVisibilityForAlarm(){
                 while (true) {
                     IsUpdatedShopExist();
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(10000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -836,7 +836,7 @@ public void setVisibilityForAlarm(){
                 while (true) {
                     IsDeletedShopExist();
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(10000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
