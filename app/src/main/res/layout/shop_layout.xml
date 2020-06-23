@@ -9,12 +9,13 @@
     <TextView
         android:id="@+id/tv_shop_name"
         style="@android:style/Widget.DeviceDefault.Light.TextView"
-        android:layout_width="133dp"
+        android:layout_width="154dp"
         android:layout_height="78dp"
         android:fontFamily="@font/arimo"
+        android:paddingLeft="7dp"
         android:shadowColor="#FAF6F6"
         android:textColor="#C4CED6"
-        android:textSize="20sp"
+        android:textSize="16sp"
         android:textStyle="bold" />
 
     <TextView
