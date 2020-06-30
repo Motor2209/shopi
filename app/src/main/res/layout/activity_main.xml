@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#403F3F"
+    android:background="#2D2B2B"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
@@ -87,7 +87,7 @@
     <TextView
         android:id="@+id/textView2"
         android:layout_width="349dp"
-        android:layout_height="wrap_content"
+        android:layout_height="20dp"
         android:layout_gravity="bottom"
         android:text="server: "
         android:textColor="#E1DCDB" />
@@ -98,6 +98,15 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginBottom="20dp"
+        android:text="coordinates: "
+        android:textColor="#E1DCDB" />
+
+    <TextView
+        android:id="@+id/textLists"
+        android:layout_width="349dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="40dp"
         android:text="coordinates: "
         android:textColor="#E1DCDB" />
 

@@ -55,8 +55,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private List<Product> productListFromDB = new ArrayList<>();
     private List<Shop> shopListFromDB = new ArrayList<>();
     private List<Product> alarmListFromDB = new ArrayList<>();
+    private List<Product> notUpdatedAlarmsInDB = new ArrayList<>();
+    private List<Product> notDeletedProductsInDB = new ArrayList<>();
+    private List<Product> notEditedProductsInDB = new ArrayList<>();
+    private List<Product> notAddedProductsInDB = new ArrayList<>();
+    private List<Shop> notDeletedShopsInDB = new ArrayList<>();
+    private List<Shop> notEditedShopsInDB = new ArrayList<>();
+    private List<Shop> notAddedShopInDB = new ArrayList<>();
     private Product addedProduct;
     private Shop addedShop;
+    private Product editedProduct;
+    private Product deletedProduct;
+    private Shop editedShop;
+    private Shop deletedShop;
     private double actualLatitude = 0;
     private double actualLongitude = 0;
     private Shop nearestShop;
@@ -64,6 +75,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private NotificationManager notificationManager;
     private int NOTIFY_ID = 1;
     private String ChannelId = "channel_id";
+    private Retrofit retrofit;
+    private TextView listsView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,8 +94,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         buttonAddShop = findViewById(R.id.button_additionShop);
         alarmMessage = findViewById(R.id.tv_ALARM_Message);
         coordinates = findViewById(R.id.textCoord);
+        listsView = findViewById(R.id.textLists);
+        coordinates.setVisibility(View.INVISIBLE);
+        listsView.setVisibility(View.INVISIBLE);
+        textResult.setVisibility(View.INVISIBLE);
+
 
         createRecyclerView();
+        initRetrofit();
 
         View.OnClickListener onClickListenerAlarms = new View.OnClickListener() {
             @Override
@@ -140,7 +159,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 final EditText editTextName = dialog.findViewById(R.id.edit_name);
                 final EditText editTextAmount = dialog.findViewById(R.id.edit_amount);
                 final EditText editTextExpiration = dialog.findViewById(R.id.edit_expiration);
-
                 Button dialogButtonAccept = (Button) dialog.findViewById(R.id.button_accept);
                 Button dialogButtonCancel = (Button) dialog.findViewById(R.id.button_cancel);
                 Button dialogButtonPlusAmount = (Button) dialog.findViewById((R.id.button_plus_Amount));
@@ -148,8 +166,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 Button dialogButtonMinusAmount = (Button) dialog.findViewById((R.id.button_minus_Amount));
                 Button dialogButtonMinusExpiration = (Button) dialog.findViewById((R.id.button_minus_Expiration));
                 Button dialogClose = (Button) dialog.findViewById(R.id.button_close);
-
-
 
                 dialogButtonCancel.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -178,7 +194,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                         }
                         inputedAm++;
                         editTextAmount.setText(String.valueOf(inputedAm));
-
                     }
                 });
 
@@ -212,7 +227,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                             inputedAm--;
                         }
                         editTextAmount.setText(String.valueOf(inputedAm));
-
                     }
                 });
 
@@ -251,11 +265,25 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                 Integer.parseInt(inputtedExpiration));
 
                         addProductToDB();
-                        getProductDataFromDB();
+                        addedProduct.setOverdueDate("in process..");
+                        productListFromDB.add(addedProduct);
+                        adapterProduct.setItems(productListFromDB);
                         recyclerView.setAdapter(adapterProduct);
+                        saveProductsToPhoneMemory();
                         dialog.dismiss();
                         Toast.makeText(MainActivity.this, "Added new product",
                                 Toast.LENGTH_SHORT).show();
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(4000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                getProductDataFromDB();
+                            }
+                        }).start();
                     }
                 });
                 dialog.show();
@@ -280,13 +308,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 buttonAddProduct.setVisibility(View.INVISIBLE);
                 buttonAddShop.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.VISIBLE);
-                // adapterProduct.clearItems();
                 loadShopsFromPhoneMemory();
                 adapterShop.clearItems();
                 recyclerView.setAdapter(adapterShop);
                 adapterShop.setItems(shopListFromDB);
                 recyclerView.setAdapter(adapterShop);
-
             }
         };
         buttonShop.setOnClickListener(onClickListenerShop);
@@ -303,7 +329,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 final EditText editTextLatitude = dialog.findViewById(R.id.edit_latitude);
                 final EditText editTextLongitude = dialog.findViewById(R.id.edit_longitude);
                 final EditText editTextAreaSize = dialog.findViewById(R.id.edit_area_Size);
-
                 Button dialogButtonAccept = (Button) dialog.findViewById(R.id.button_accept_shop);
                 Button dialogButtonCancel = (Button) dialog.findViewById(R.id.button_cancel_shop);
                 Button dialogClose = (Button) dialog.findViewById(R.id.button_close_shop);
@@ -339,7 +364,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                         addedShop = new Shop(inputedName, Float.parseFloat(inputedLatitude),
                                 Float.parseFloat(inputedLongitude), Integer.parseInt(inputedAreaSize));
                         addShopToDB();
-                        getShopDataFromDB();
+                        shopListFromDB.add(addedShop);
+                        adapterShop.setItems(shopListFromDB);
                         recyclerView.setAdapter(adapterShop);
                         dialog.dismiss();
                         Toast.makeText(MainActivity.this, "Added new shop",
@@ -371,50 +397,54 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
         location.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000, 0, this);
 
+
         loadAlarmsFromPhoneMemory();
         loadShopsFromPhoneMemory();
         loadProductsFromPhoneMemory();
+        loadNotDeletedProductsFromPhoneMemory();
+        loadNotEditedProductsFromPhoneMemory();
+        loadNotDeletedShopsFromPhoneMemory();
+        loadNotEditedShopsFromPhoneMemory();
+        notEditedProductsInDB.clear();
+        notDeletedProductsInDB.clear();
+        initRetrofit();
         updateAllDataFromDB();
         makeAlarmNearTheShop();
         DBupdateScannerEditedProduct();
         DBupdateScannerDeletedProduct();
         DBupdateScannerDeletedShop();
         DBupdateScannerEditedShop();
+        scannerNotActualisedDataToDB();
+
 
     }
-/*
-public void createChannelIfNeeded(NotificationManager manager){
-  if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-      NotificationChannel notificationChannel = new NotificationChannel(ChannelId, ChannelId, NotificationManager.IMPORTANCE_DEFAULT);
-      manager.createNotificationChannel(notificationChannel);
 
-  }
-
-}
-
-public void createNotificationMessage(){
-    notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
-            intent, PendingIntent.FLAG_UPDATE_CURRENT);
-    NotificationCompat.Builder  notBilder =
-            new NotificationCompat.Builder(getApplicationContext(), ChannelId )
-                    .setAutoCancel(false)
-                    .setSmallIcon(R.drawable.ic_launcher_foreground)
-                    .setWhen(System.currentTimeMillis())
-                    .setContentIntent(pendingIntent)
-                    .setContentTitle("Hello, from SHOPI! ")
-                    .setContentText("You are near the shop " + nearestShop.getName() + "! "
-                            + "You can by your " + productListFromDB.size() + " overdue products here :)")
-                    .setPriority(PRIORITY_HIGH);
-    createChannelIfNeeded(notificationManager);
-    notificationManager.notify(NOTIFY_ID, notBilder.build());
-}*/
-
-    public void initLocationManager(){
-
+   /* public void createChannelIfNeeded(NotificationManager manager) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(ChannelId, ChannelId, NotificationManager.IMPORTANCE_DEFAULT);
+            manager.createNotificationChannel(notificationChannel);
+        }
     }
+
+    public void createNotificationMessage() {
+        notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Builder notBilder =
+                new NotificationCompat.Builder(getApplicationContext(), ChannelId)
+                        .setAutoCancel(false)
+                        .setSmallIcon(R.drawable.ic_launcher_foreground)
+                        .setWhen(System.currentTimeMillis())
+                        .setContentIntent(pendingIntent)
+                        .setContentTitle("Hello, it's SHOPI! ")
+                        .setContentText("You are near the shop " + nearestShop.getName() + "! "
+                                + "You can by your " + alarmListFromDB.size() + " overdue products here :)")
+                        .setPriority(PRIORITY_HIGH);
+        createChannelIfNeeded(notificationManager);
+        notificationManager.notify(NOTIFY_ID, notBilder.build());
+    }*/
 
     public void makeAlarmNearTheShop() {
         new Thread(new Runnable() {
@@ -427,28 +457,27 @@ public void createNotificationMessage(){
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    if(alarmListFromDB.size() == 0 && count == 0 ){
+                    if (alarmListFromDB.size() == 0 && count == 0) {
                         try {
                             Thread.sleep(60000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                         count++;
-                    }else if (alarmListFromDB.size() == 0 && count == 1 )
-                    {
+                    } else if (alarmListFromDB.size() == 0 && count == 1) {
                         try {
                             Thread.sleep(600000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
-                    if ( AreYouNearTheShop()) {
-
+                    if (AreYouNearTheShop()) {
+                        //   createNotificationMessage();
                         alarmMessage.setText("You are near the shop " + nearestShop.getName() + "!\n"
                                 + "You can by your " + alarmListFromDB.size() +
                                 " overdue products here :)");
                         try {
-                            Thread.sleep(7000);
+                            Thread.sleep(8000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -467,7 +496,7 @@ public void createNotificationMessage(){
     public boolean AreYouNearTheShop() {
 
         if (theSmallestDistanceToShop() < Float.MAX_VALUE && theSmallestDistanceToShop() < (float) 1000 +
-                ((float)nearestShop.getAreaSize()/2)) {
+                ((float) nearestShop.getAreaSize() / 2)) {
             return true;
         } else
             return false;
@@ -491,10 +520,6 @@ public void createNotificationMessage(){
     }
 
     public void getAlarmDataFromDB() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(getString(R.string.baseURL))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
         AlarmApi alarmAPI = retrofit.create(AlarmApi.class);
         Call<List<Product>> call = alarmAPI.getAlarms();
 
@@ -509,18 +534,7 @@ public void createNotificationMessage(){
                 alarmListFromDB.clear();
                 alarmListFromDB.addAll(list);
                 saveAlarmsToPhoneMemory();
-
-                textResult.setText("");
-                for (Product product : list) {
-                    Product product1 = product;
-                    // String s = product1.getId().toString();
-                    String content = "";
-                    content += " Alarm: " + product.getId(); /*+ " amount: " + product.getAmount() +
-                    " expiration: " + product.getExpiration() +" id: " + s + "\n";*/
-
-                    textResult.append(content);
-                }
-
+                textResult.append("Loaded shops from DB");
             }
 
             @Override
@@ -531,35 +545,20 @@ public void createNotificationMessage(){
     }
 
     void getProductDataFromDB() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(getString(R.string.baseURL))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
         ProductAPI productAPI = retrofit.create(ProductAPI.class);
         Call<List<Product>> call = productAPI.getProduct();
         call.enqueue(new Callback<List<Product>>() {
             @Override
             public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                 if (!response.isSuccessful()) {
-                    textResult.setText("Cant Load products!");
+                    textResult.setText("Can't Load products!");
                     return;
                 }
                 List<Product> list = response.body();
                 productListFromDB.clear();
                 productListFromDB.addAll(list);
-              //  adapterProduct.setItems(productListFromDB);
+                textResult.setText("Loaded products from DB");
                 saveProductsToPhoneMemory();
-
-                textResult.setText("");
-                for (Product product : list) {
-                    Product product1 = product;
-                    String s = product1.getId().toString();
-                    String content = "";
-                    content += " Product: " + product.getName(); /*+ " amount: " + product.getAmount() +
-                    " expiration: " + product.getExpiration() +" id: " + s + "\n";*/
-                    textResult.setText(content);
-                }
             }
 
             @Override
@@ -570,74 +569,87 @@ public void createNotificationMessage(){
     }
 
     private void addProductToDB() {
-
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(getString(R.string.baseURL))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
         ProductAPI productApi = retrofit.create(ProductAPI.class);
-
+        addedProduct.setOverdueDate(null);
         Call<Product> call = productApi.createPost(addedProduct);
         call.enqueue(new Callback<Product>() {
             @Override
             public void onResponse(Call<Product> call, Response<Product> response) {
                 if (!response.isSuccessful()) {
                     textResult.setText("Code" + response.code());
+                    addedProduct.setOverdueDate("no connection..");
+                    saveProductsToPhoneMemory();
+
                     return;
                 }
                 Product responsePr = response.body();
-
-
                 textResult.setText("response: " + response.code());
             }
 
             @Override
             public void onFailure(Call<Product> call, Throwable t) {
-                textResult.setText(t.getMessage());
-
+                textResult.setText("Failure add!");
             }
         });
     }
 
     public void upDateProductInDB() {
-        Product editedProduct = adapterProduct.getEditedProduct();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(getString(R.string.baseURL))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
         ProductAPI productApi = retrofit.create(ProductAPI.class);
+        editedProduct.setOverdueDate(null);
         Call<Product> call = productApi.createPUT(editedProduct.getId(), editedProduct);
-
-
         call.enqueue(new Callback<Product>() {
             @Override
             public void onResponse(Call<Product> call, Response<Product> response) {
                 if (!response.isSuccessful()) {
                     textResult.setText("Code" + response.code());
+                    editedProduct.setOverdueDate("no connection..");
+                    int indexPR = findProductIndexInList(productListFromDB, editedProduct);
+                    if(indexPR >= 0){
+                    productListFromDB.set(indexPR, editedProduct);
+                    saveProductsToPhoneMemory();}
+
+                    if (!notEditedProductsInDB.contains(editedProduct)) {
+                        notEditedProductsInDB.add(editedProduct);
+                        saveNotEditedProductsToPhoneMemory();
+                    } else {
+                        int index = findProductIndexInList(notEditedProductsInDB, editedProduct);
+                        notEditedProductsInDB.set(index, editedProduct);
+                        saveNotEditedProductsToPhoneMemory();
+                    }
                     return;
                 }
                 Product responsePr = response.body();
-                recyclerView.setAdapter(adapterProduct);
-                textResult.setText("response: " + response.code() + responsePr.getName());
+                getProductDataFromDB();
+                saveProductsToPhoneMemory();
+                textResult.setText("response: " + response.code());
+                notEditedProductsInDB.remove(editedProduct);
+                saveNotEditedProductsToPhoneMemory();
             }
 
             @Override
             public void onFailure(Call<Product> call, Throwable t) {
-                textResult.setText(t.getMessage());
-
+                textResult.setText("Failure update Pr!");
             }
         });
     }
 
-    public void IsUpdatedProductExist() {
-        Product editedProduct = adapterProduct.getEditedProduct();
-        if (editedProduct != null) {
-            upDateProductInDB();
+    public void updateEditedProductIfExist() {
+        Product editedProductR = adapterProduct.getEditedProduct();
+        if (editedProductR != null) {
+            int indexEditedPr = findProductIndexInList(productListFromDB, editedProductR);
+            if (indexEditedPr >= 0) {
+                productListFromDB.set(indexEditedPr, editedProductR);
+                saveProductsToPhoneMemory();
+            }
+            int indexForEditedList = findProductIndexInList(notEditedProductsInDB, editedProductR);
+            if (indexForEditedList < 0) {
+                notEditedProductsInDB.add(editedProductR);
+                saveNotEditedProductsToPhoneMemory();
+            }else{
+                notEditedProductsInDB.set(indexForEditedList, editedProductR);
+                saveNotEditedProductsToPhoneMemory();
+            }
             adapterProduct.ResetEditedProductForNull();
-
-
         }
     }
 
@@ -646,7 +658,7 @@ public void createNotificationMessage(){
             @Override
             public void run() {
                 while (true) {
-                    IsUpdatedProductExist();
+                    updateEditedProductIfExist();
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException e) {
@@ -658,36 +670,57 @@ public void createNotificationMessage(){
     }
 
     public void deleteProductFromDB() {
-        Product deletedPr = adapterProduct.getDeletedProduct();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(getString(R.string.baseURL))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
         ProductAPI productApi = retrofit.create(ProductAPI.class);
-        Call<Void> call = productApi.deleteProduct(deletedPr.getId());
+        Call<Void> call = productApi.deleteProduct(deletedProduct.getId());
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-//                textResult.setText(response.code());
+                if (!response.isSuccessful()) {
+                    textResult.setText("Not deleted from DB");
+                    if (!notDeletedProductsInDB.contains(deletedProduct)) {
+                        notDeletedProductsInDB.add(deletedProduct);
+                        saveNotDeletedProductsToPhoneMemory();
+                    }
+                } else {
+                    textResult.setText("deleted from DB");
+
+                    if (notDeletedProductsInDB != null) {
+                        try {
+                            notDeletedProductsInDB.remove(deletedProduct);
+                            saveNotDeletedProductsToPhoneMemory();
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                textResult.setText(t.getMessage());
+                textResult.setText("FAILuRE DELETED PR!");
             }
         });
 
     }
 
-    public void IsDeletedProductExist() {
-        Product deletedProduct = adapterProduct.getDeletedProduct();
-        if (deletedProduct != null) {
-            deleteProductFromDB();
-            textResult.setText("DELETED!");
+    public void removeDeletedProductIfExist() {
+        Product deletedProductR = adapterProduct.getDeletedProduct();
+        if (deletedProductR != null) {
+            int indexNotDEl = findProductIndexInList(notDeletedProductsInDB, deletedProductR);
+            if (indexNotDEl < 0) {
+                notDeletedProductsInDB.add(deletedProductR);
+            }
+            saveNotDeletedProductsToPhoneMemory();
+            int indexDEL = findProductIndexInList(productListFromDB, deletedProductR);
+            if (indexDEL >= 0) {
+                productListFromDB.remove(indexDEL);
+            }
+            saveProductsToPhoneMemory();
+            int indexInNonUpdated = findProductIndexInList(notEditedProductsInDB, deletedProduct);
+            if(indexInNonUpdated >= 0){
+                notEditedProductsInDB.remove(indexInNonUpdated);
+            }
             adapterProduct.ResetDeletedProductForNull();
-
-            // adapterProduct.setItems(listFromDB);
-            // recyclerView.setAdapter(adapterProduct);
         }
     }
 
@@ -696,9 +729,9 @@ public void createNotificationMessage(){
             @Override
             public void run() {
                 while (true) {
-                    IsDeletedProductExist();
+                    removeDeletedProductIfExist();
                     try {
-                        Thread.sleep(5000);
+                        Thread.sleep(500);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -708,14 +741,6 @@ public void createNotificationMessage(){
     }
 
     void getShopDataFromDB() {
-        adapterShop = new AdapterShop(this);
-//        recyclerView.setAdapter(adapterShop);
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://98e034c082c1.ngrok.io")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
         ShopApi shopAPI = retrofit.create(ShopApi.class);
         Call<List<Shop>> call = shopAPI.getShops();
         call.enqueue(new Callback<List<Shop>>() {
@@ -729,16 +754,7 @@ public void createNotificationMessage(){
                 shopListFromDB.clear();
                 shopListFromDB.addAll(list);
                 saveShopsToPhoneMemory();
-
-                textResult.setText("");
-                for (Shop shop : list) {
-                    Shop product1 = shop;
-                    String s = product1.getId().toString();
-                    String content = "";
-                    content += " shops: " + shop.getName(); /*+ " amount: " + product.getAmount() +
-                    " expiration: " + product.getExpiration() +" id: " + s + "\n";*/
-                    textResult.append(content);
-                }
+                textResult.setText("Loaded shops from DB");
             }
 
             @Override
@@ -749,10 +765,6 @@ public void createNotificationMessage(){
     }
 
     private void addShopToDB() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(getString(R.string.baseURL))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
         ShopApi shopApi = retrofit.create(ShopApi.class);
         Call<Shop> call = shopApi.createPost(addedShop);
         call.enqueue(new Callback<Shop>() {
@@ -760,60 +772,50 @@ public void createNotificationMessage(){
             public void onResponse(Call<Shop> call, Response<Shop> response) {
                 if (!response.isSuccessful()) {
                     textResult.setText("Code" + response.code());
-                    return;
                 }
                 Shop responseShop = response.body();
-
-
                 textResult.setText("response: " + response.code());
             }
 
             @Override
             public void onFailure(Call<Shop> call, Throwable t) {
                 textResult.setText(t.getMessage());
-
             }
         });
     }
 
     public void updateShopInDB() {
-        Shop editedShop = adapterShop.getEditedShop();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(getString(R.string.baseURL))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
         ShopApi shopApi = retrofit.create(ShopApi.class);
         Call<Shop> call = shopApi.createPUT(editedShop.getId(), editedShop);
-
-
         call.enqueue(new Callback<Shop>() {
             @Override
             public void onResponse(Call<Shop> call, Response<Shop> response) {
                 if (!response.isSuccessful()) {
                     textResult.setText("Code" + response.code());
-                    return;
+                    if (notEditedShopsInDB.contains(editedShop)) {
+                        notEditedShopsInDB.add(editedShop);
+                        saveNotEditedShopsToPhoneMemory();
+                    }
                 }
                 Shop responseShop = response.body();
-                // recyclerView.setAdapter(adapterShop);
                 textResult.setText("response: " + response.code() + responseShop.getName());
             }
 
             @Override
             public void onFailure(Call<Shop> call, Throwable t) {
                 textResult.setText(t.getMessage());
-
             }
         });
     }
 
-    public void IsUpdatedShopExist() {
-        Shop editedShop = adapterShop.getEditedShop();
-        if (editedShop != null) {
+    public void updateEditedShopIfExist() {
+        Shop editedShopR = adapterShop.getEditedShop();
+        if (editedShopR != null) {
+            editedShop = editedShopR;
             updateShopInDB();
+            getShopDataFromDB();
+            saveShopsToPhoneMemory();
             adapterShop.resetEditedShopForNull();
-
-
         }
     }
 
@@ -822,7 +824,7 @@ public void createNotificationMessage(){
             @Override
             public void run() {
                 while (true) {
-                    IsUpdatedShopExist();
+                    updateEditedShopIfExist();
                     try {
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
@@ -834,17 +836,27 @@ public void createNotificationMessage(){
     }
 
     public void deleteShopFromDB() {
-        Shop deletedPr = adapterShop.getDeletedShop();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(getString(R.string.baseURL))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
         ShopApi shopApi = retrofit.create(ShopApi.class);
-        Call<Void> call = shopApi.deleteProduct(deletedPr.getId());
+        Call<Void> call = shopApi.deleteShop(deletedShop.getId());
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-//                textResult.setText(response.code());
+                if (!response.isSuccessful()) {
+                    textResult.setText("Not deteled from DB! ");
+                    if (notDeletedShopsInDB.contains(deletedShop)) {
+                        notDeletedShopsInDB.add(deletedShop);
+                        saveNotDeletedShopsToPhoneMemory();
+                    }
+                } else {
+                    textResult.setText("deleted shop from DB");
+                    if (notDeletedShopsInDB != null) {
+                        try {
+                            notDeletedShopsInDB.remove(deletedShop);
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             }
 
             @Override
@@ -852,18 +864,17 @@ public void createNotificationMessage(){
                 textResult.setText(t.getMessage());
             }
         });
-
     }
 
-    public void IsDeletedShopExist() {
-        Shop deletedShop = adapterShop.getDeletedShop();
-        if (deletedShop != null) {
+    public void removeDeletedShopIfExist() {
+        Shop deletedShopR = adapterShop.getDeletedShop();
+        if (deletedShopR != null) {
+            deletedShop = deletedShopR;
             deleteShopFromDB();
+            shopListFromDB.remove(deletedShop);
+            saveShopsToPhoneMemory();
             textResult.setText("DELETED!");
             adapterShop.resetDeletedShopForNull();
-
-            // adapterProduct.setItems(listFromDB);
-            // recyclerView.setAdapter(adapterShop);
         }
     }
 
@@ -872,7 +883,7 @@ public void createNotificationMessage(){
             @Override
             public void run() {
                 while (true) {
-                    IsDeletedShopExist();
+                    removeDeletedShopIfExist();
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException e) {
@@ -888,7 +899,7 @@ public void createNotificationMessage(){
         actualLongitude = location.getLongitude();
         actualLatitude = location.getLatitude();
         String coordinatess = "long: " + String.valueOf(actualLongitude) + " lat: " + String.valueOf(actualLatitude);
-        coordinates.setText(coordinatess);
+        // coordinates.setText(coordinatess);
 
     }
 
@@ -923,7 +934,7 @@ public void createNotificationMessage(){
     public void createRecyclerView() {
         recyclerView = findViewById(R.id.recycler);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager); // отображение списка тут линеар
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setVisibility(View.INVISIBLE);
         adapterProduct = new AdapterProduct(this);
@@ -938,8 +949,6 @@ public void createNotificationMessage(){
         String json = gson.toJson(productListFromDB);
         editor.putString("productList", json);
         editor.apply();
-        Toast.makeText(MainActivity.this, "saves products to phone",
-                Toast.LENGTH_SHORT).show();
 
     }
 
@@ -953,6 +962,7 @@ public void createNotificationMessage(){
 
         if (productListFromDB == null) {
             productListFromDB = new ArrayList<>();
+            textResult.setText("Empty products");
         }
     }
 
@@ -975,6 +985,7 @@ public void createNotificationMessage(){
 
         if (alarmListFromDB == null) {
             alarmListFromDB = new ArrayList<>();
+            textResult.setText("Empty alarms");
         }
     }
 
@@ -1001,37 +1012,226 @@ public void createNotificationMessage(){
             shopListFromDB = new ArrayList<>();
             Toast.makeText(MainActivity.this, "loaded null list",
                     Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(MainActivity.this, "loaded list shops correctly",
+                    Toast.LENGTH_SHORT).show();
         }
-        Toast.makeText(MainActivity.this, "loaded list correctly",
-                Toast.LENGTH_SHORT).show();
     }
 
-    public void updateAllDataFromDB(){
+    public void updateAllDataFromDB() {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while(true){
-                getAlarmDataFromDB();
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                getProductDataFromDB();
+                    getAlarmDataFromDB();
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    getProductDataFromDB();
 
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    getShopDataFromDB();
                 }
-                getShopDataFromDB();
-                try {
-                    Thread.sleep(300000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                 }
-               }
+        }).start();
+    }
+
+    public void initRetrofit() {
+        retrofit = new Retrofit.Builder()
+                .baseUrl(getString(R.string.baseURL))
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+    }
+
+    public void saveNotDeletedProductsToPhoneMemory() {
+        sPref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = sPref.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(notDeletedProductsInDB);
+        editor.putString("productsNotDeletedFromDB", json);
+        editor.apply();
+    }
+
+    public void loadNotDeletedProductsFromPhoneMemory() {
+        sPref = getPreferences(MODE_PRIVATE);
+        Gson gsonLoad = new Gson();
+        String jsonLoad = sPref.getString("productsNotDeletedFromDB", null);
+        Type type = new TypeToken<ArrayList<Product>>() {
+        }.getType();
+        notDeletedProductsInDB = gsonLoad.fromJson(jsonLoad, type);
+        if (notDeletedProductsInDB == null) {
+            notDeletedProductsInDB = new ArrayList<>();
+        }
+        coordinates.setText("loaded non deleted products correctly");
+    }
+
+    public void saveNotEditedProductsToPhoneMemory() {
+        sPref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = sPref.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(notEditedProductsInDB);
+        editor.putString("productsNotEditedFromDB", json);
+        editor.apply();
+
+    }
+
+    public void loadNotEditedProductsFromPhoneMemory() {
+        sPref = getPreferences(MODE_PRIVATE);
+        Gson gsonLoad = new Gson();
+        String jsonLoad = sPref.getString("productsNotEditedFromDB", null);
+        Type type = new TypeToken<ArrayList<Product>>() {
+        }.getType();
+        notEditedProductsInDB = gsonLoad.fromJson(jsonLoad, type);
+        if (notEditedProductsInDB == null) {
+            notEditedProductsInDB = new ArrayList<>();
+        }
+        coordinates.setText("Loaded non Edited list products correctly ");
+    }
+
+    public void saveNotDeletedShopsToPhoneMemory() {
+        sPref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = sPref.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(notDeletedShopsInDB);
+        editor.putString("shopNotDeletedFromDB", json);
+        editor.apply();
+        Toast.makeText(MainActivity.this, "saved  non deleted shops to Phone!",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    public void loadNotDeletedShopsFromPhoneMemory() {
+        sPref = getPreferences(MODE_PRIVATE);
+        Gson gsonLoad = new Gson();
+        String jsonLoad = sPref.getString("shopNotDeletedFromDB", null);
+        Type type = new TypeToken<ArrayList<Shop>>() {
+        }.getType();
+        notDeletedShopsInDB = gsonLoad.fromJson(jsonLoad, type);
+
+        if (notDeletedShopsInDB == null) {
+            notDeletedShopsInDB = new ArrayList<>();
+            Toast.makeText(MainActivity.this, "loaded null list",
+                    Toast.LENGTH_SHORT).show();
+        }
+        Toast.makeText(MainActivity.this, "loaded list notDELETED shops correctly",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    public void saveNotEditedShopsToPhoneMemory() {
+        sPref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = sPref.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(notEditedShopsInDB);
+        editor.putString("shopNotEditedFromDB", json);
+        editor.apply();
+        Toast.makeText(MainActivity.this, "saved  non edited shops to Phone!",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    public void loadNotEditedShopsFromPhoneMemory() {
+        sPref = getPreferences(MODE_PRIVATE);
+        Gson gsonLoad = new Gson();
+        String jsonLoad = sPref.getString("shopNotEditedFromDB", null);
+        Type type = new TypeToken<ArrayList<Shop>>() {
+        }.getType();
+        notEditedShopsInDB = gsonLoad.fromJson(jsonLoad, type);
+
+        if (notEditedShopsInDB == null) {
+            notEditedShopsInDB = new ArrayList<>();
+            Toast.makeText(MainActivity.this, "loaded null list",
+                    Toast.LENGTH_SHORT).show();
+        }
+        Toast.makeText(MainActivity.this, "loaded list notEDITED shop correctly",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    public void scannerNotActualisedDataToDB() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    coordinates.setText(notDeletedProductsInDB.toString());
+                    if (notDeletedProductsInDB != null) {
+                        for (int i = 0; i < notDeletedProductsInDB.size(); i++) {
+                            deletedProduct = notDeletedProductsInDB.get(i);
+                            deleteProductFromDB();
+                            try {
+                                Thread.sleep(5000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if (notDeletedShopsInDB != null) {
+                        for (Shop s : notDeletedShopsInDB) {
+                            deletedShop = s;
+                            deleteShopFromDB();
+                            try {
+                                Thread.sleep(5000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if (notEditedShopsInDB != null) {
+                        for (Shop s : notEditedShopsInDB) {
+                            editedShop = s;
+                            updateShopInDB();
+                            try {
+                                Thread.sleep(5000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    listsView.setText(notEditedProductsInDB.toString());
+                    if (notEditedProductsInDB != null) {
+                        for (Product p : notEditedProductsInDB) {
+                            editedProduct = p;
+                            upDateProductInDB();
+                            try {
+                                Thread.sleep(2000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
             }
         }).start();
+    }
+
+    public int findProductIndexInList(List<Product> productsFromDB, Product deletedProduct) {
+        int index = -1;
+        for (int i = 0; i < productsFromDB.size(); i++) {
+            int answer = productsFromDB.get(i).getId().compareTo(deletedProduct.getId());
+            if (answer != 1 && answer != -1) {
+                index = i;
+            }
+        }
+        return index;
     }
 }

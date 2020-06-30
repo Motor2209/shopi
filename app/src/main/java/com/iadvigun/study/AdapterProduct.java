@@ -27,25 +27,25 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ProductL
     int alarmOrListPr = 0;
 
 
-    public Product getDeletedProduct(){
+    public Product getDeletedProduct() {
         return deletedProduct;
     }
-    public void ResetDeletedProductForNull(){
+
+    public void ResetDeletedProductForNull() {
         deletedProduct = null;
     }
 
-    public Product getEditedProduct(){
+    public Product getEditedProduct() {
         return editedProduct;
     }
 
-    public void ResetEditedProductForNull(){
+    public void ResetEditedProductForNull() {
         editedProduct = null;
     }
 
-    public void setAlarmOrListPr(int alarmOrListPr){
+    public void setAlarmOrListPr(int alarmOrListPr) {
         this.alarmOrListPr = alarmOrListPr;
     }
-
 
 
     public void setItems(List<Product> list) {
@@ -53,7 +53,8 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ProductL
         this.list.addAll(list);
         notifyDataSetChanged();
     }
-    public void upDateListAdapter(){
+
+    public void upDateListAdapter() {
         notifyDataSetChanged();
     }
 
@@ -61,10 +62,10 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ProductL
         list.clear();
         notifyDataSetChanged();
     }
-    public List<Product> getListFromAdapter (){
+
+    public List<Product> getListFromAdapter() {
         return this.list;
     }
-
 
 
     public AdapterProduct(Context parent) {
@@ -121,12 +122,12 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ProductL
             buttonDone = itemView.findViewById(R.id.tv_button_DONE);
             imageDone = itemView.findViewById(R.id.imageViewDone);
 
-            if(alarmOrListPr == 1){
+            if (alarmOrListPr == 1) {
                 buttonDone.setVisibility(View.VISIBLE);
                 imageDone.setVisibility(View.VISIBLE);
                 buttonDelete.setVisibility(View.INVISIBLE);
                 productOverdue.setBackgroundResource((R.color.overDue_Red));
-            }else if(alarmOrListPr == 2){
+            } else if (alarmOrListPr == 2) {
                 buttonDone.setVisibility(View.INVISIBLE);
                 imageDone.setVisibility(View.INVISIBLE);
                 buttonDelete.setVisibility(View.VISIBLE);
@@ -138,13 +139,13 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ProductL
                 public void onClick(View v) {
                     Toast.makeText(parent, "Done!" + getAdapterPosition(),
                             Toast.LENGTH_SHORT).show();
-                   String name =  list.get(getAdapterPosition()).getName();
-                   int amount = list.get(getAdapterPosition()).getAmount();
-                   int expiration = list.get(getAdapterPosition()).getExpiration();
+                    String name = list.get(getAdapterPosition()).getName();
+                    int amount = list.get(getAdapterPosition()).getAmount();
+                    int expiration = list.get(getAdapterPosition()).getExpiration();
 
                     editedProduct = new Product(name, amount,
                             expiration);
-                    editedProduct.setId((Long)list.get(getAdapterPosition()).getId());
+                    editedProduct.setId((Long) list.get(getAdapterPosition()).getId());
                     list.remove(getAdapterPosition());
                     notifyDataSetChanged();
                 }
@@ -162,9 +163,9 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ProductL
 
                     deletedProduct = new Product(Name, Amount,
                             Expiration);
-                    deletedProduct.setId((Long)list.get(getAdapterPosition()).getId());
+                    deletedProduct.setId((Long) list.get(getAdapterPosition()).getId());
 
-                  //  deletedProduct = list.get(getAdapterPosition());    ?????????
+                    //  deletedProduct = list.get(getAdapterPosition());    ?????????
                     list.remove(list.get(getAdapterPosition()));
                     notifyDataSetChanged();
 
@@ -185,10 +186,10 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ProductL
                     final EditText editTextName = (EditText) dialog.findViewById(R.id.edit_name);
                     editTextName.setText(list.get(getAdapterPosition()).getName());
 
-                    final EditText editTextAmount =(EditText) dialog.findViewById(R.id.edit_amount);
+                    final EditText editTextAmount = (EditText) dialog.findViewById(R.id.edit_amount);
                     editTextAmount.setText(String.valueOf(list.get(getAdapterPosition()).getAmount()));
 
-                    final EditText editTextExpiration =(EditText) dialog.findViewById(R.id.edit_expiration);
+                    final EditText editTextExpiration = (EditText) dialog.findViewById(R.id.edit_expiration);
                     editTextExpiration.setText(String.valueOf(list.get(getAdapterPosition()).getExpiration()));
 
                     Button dialogButtonAccept = (Button) dialog.findViewById(R.id.button_accept);
@@ -205,10 +206,14 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ProductL
                         @Override
                         public void onClick(View v) {
                             String inputedAmount = editTextAmount.getText().toString();
-                            if(inputedAmount.equals("")){inputedAmount = "0"; }
+                            if (inputedAmount.equals("")) {
+                                inputedAmount = "0";
+                            }
                             int inputedAm = Integer.parseInt(inputedAmount);
-                            if(inputedAm < 0){inputedAm = 0;}
-                            inputedAm ++;
+                            if (inputedAm < 0) {
+                                inputedAm = 0;
+                            }
+                            inputedAm++;
                             editTextAmount.setText(String.valueOf(inputedAm));
 
                         }
@@ -218,10 +223,14 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ProductL
                         @Override
                         public void onClick(View v) {
                             String inputedExpiration = editTextExpiration.getText().toString();
-                            if(inputedExpiration.equals("")){inputedExpiration = "0"; }
+                            if (inputedExpiration.equals("")) {
+                                inputedExpiration = "0";
+                            }
                             int inputedExp = Integer.parseInt(inputedExpiration);
-                            if(inputedExp < 0){inputedExp = 0;}
-                            inputedExp ++;
+                            if (inputedExp < 0) {
+                                inputedExp = 0;
+                            }
+                            inputedExp++;
                             editTextExpiration.setText(String.valueOf(inputedExp));
                         }
                     });
@@ -230,10 +239,15 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ProductL
                         @Override
                         public void onClick(View v) {
                             String inputedAmount = editTextAmount.getText().toString();
-                            if(inputedAmount.equals("")){inputedAmount = "0"; }
+                            if (inputedAmount.equals("")) {
+                                inputedAmount = "0";
+                            }
                             int inputedAm = Integer.parseInt(inputedAmount);
-                            if(inputedAm <= 0){inputedAm = 0;}else{
-                                inputedAm --;}
+                            if (inputedAm <= 0) {
+                                inputedAm = 0;
+                            } else {
+                                inputedAm--;
+                            }
                             editTextAmount.setText(String.valueOf(inputedAm));
 
                         }
@@ -243,10 +257,15 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ProductL
                         @Override
                         public void onClick(View v) {
                             String inputedExpiration = editTextExpiration.getText().toString();
-                            if(inputedExpiration.equals("")){inputedExpiration = "0"; }
+                            if (inputedExpiration.equals("")) {
+                                inputedExpiration = "0";
+                            }
                             int inputedExp = Integer.parseInt(inputedExpiration);
-                            if(inputedExp <= 0){inputedExp = 0;}else{
-                                inputedExp --;}
+                            if (inputedExp <= 0) {
+                                inputedExp = 0;
+                            } else {
+                                inputedExp--;
+                            }
                             editTextExpiration.setText(String.valueOf(inputedExp));
                         }
                     });
@@ -264,19 +283,25 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ProductL
                         public void onClick(View v) {
                             Toast.makeText(parent, "Edition method" + getAdapterPosition(),
                                     Toast.LENGTH_SHORT).show();
-                           String inputedName = editTextName.getText().toString();
-                           list.get(getAdapterPosition()).setName(inputedName);
-                           String inputedAmount = editTextAmount.getText().toString();
-                            if(inputedAmount.equals("")){inputedAmount = "0"; }
-                           list.get(getAdapterPosition()).setAmount(Integer.parseInt(inputedAmount));
-                           String inputedExpiration = editTextExpiration.getText().toString();
-                            if (inputedExpiration.equals("")){inputedExpiration = "0";}
-                           list.get(getAdapterPosition()).setExpiration(Integer.parseInt(inputedExpiration));
+                            String inputedName = editTextName.getText().toString();
+                            list.get(getAdapterPosition()).setName(inputedName);
+                            String inputedAmount = editTextAmount.getText().toString();
+                            if (inputedAmount.equals("")) {
+                                inputedAmount = "0";
+                            }
+                            list.get(getAdapterPosition()).setAmount(Integer.parseInt(inputedAmount));
+                            String inputedExpiration = editTextExpiration.getText().toString();
+                            if (inputedExpiration.equals("")) {
+                                inputedExpiration = "0";
+                            }
+                            list.get(getAdapterPosition()).setExpiration(Integer.parseInt(inputedExpiration));
+                            list.get(getAdapterPosition()).setOverdueDate("in process..");
 
 
                             editedProduct = new Product(inputedName, Integer.parseInt(inputedAmount),
                                     Integer.parseInt(inputedExpiration));
-                            editedProduct.setId((Long)list.get(getAdapterPosition()).getId());
+                            editedProduct.setId((Long) list.get(getAdapterPosition()).getId());
+                            editedProduct.setOverdueDate("in process..");
 
                             notifyDataSetChanged();
                             dialog.dismiss();
@@ -284,8 +309,6 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ProductL
                         }
 
                     });
-
-
 
 
                     dialogButtonCancel.setOnClickListener(new View.OnClickListener() {
@@ -298,8 +321,8 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ProductL
                 }
             });
 
-       // }
-         //   });
+            // }
+            //   });
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -312,7 +335,7 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ProductL
         }
 
         void bind(Product product) {
-           // String pattern = "yyyy-MM-dd";
+            // String pattern = "yyyy-MM-dd";
             //SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
             productNameView.setText(product.getName());
             productAmountView.setText("amount:     " + product.getAmount());

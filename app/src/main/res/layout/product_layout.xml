@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="110dp"
-    android:background="#403F3F"
+    android:background="#2D2B2B"
     android:padding="2dp">
 
     <TextView
@@ -20,7 +20,7 @@
 
     <TextView
         android:id="@+id/tv_product_amount"
-        android:layout_width="150dp"
+        android:layout_width="172dp"
         android:layout_height="24dp"
         android:layout_gravity="bottom|right"
         android:layout_marginRight="55dp"
@@ -34,10 +34,10 @@
 
     <TextView
         android:id="@+id/tv_product_expiration"
-        android:layout_width="150dp"
+        android:layout_width="172dp"
         android:layout_height="24dp"
         android:layout_gravity="right|top"
-       android:layout_marginTop="36dp"
+        android:layout_marginTop="36dp"
         android:layout_marginRight="55dp"
         android:fontFamily="@font/arimo"
         android:paddingRight="10dp"
@@ -45,14 +45,14 @@
         android:textSize="14sp" />
 
     <Button
-    android:id="@+id/tv_button_edit"
-    android:layout_width="52dp"
-    android:layout_height="33dp"
-    android:layout_gravity="right|top"
-    android:background="#292626"
-    android:text="Edit"
-    android:textColor="#DBEF0F"
-    android:textSize="12sp" />
+        android:id="@+id/tv_button_edit"
+        android:layout_width="52dp"
+        android:layout_height="25dp"
+        android:layout_gravity="right|top"
+        android:background="#191414"
+        android:text="Edit"
+        android:textColor="#DBEF0F"
+        android:textSize="12sp" />
 
     <Button
         android:id="@+id/tv_button_delete"
@@ -85,7 +85,7 @@
 
     <TextView
         android:id="@+id/tv_product_overdue"
-        android:layout_width="150dp"
+        android:layout_width="172dp"
         android:layout_height="24dp"
         android:layout_gravity="bottom|right"
         android:layout_marginRight="55dp"
@@ -102,7 +102,7 @@
         android:layout_height="16dp"
 
         android:layout_gravity="right"
-        android:layout_marginEnd="40dp"
         android:layout_marginTop="53dp"
+        android:layout_marginEnd="40dp"
         app:srcCompat="@android:drawable/ic_menu_edit" />
 </FrameLayout>

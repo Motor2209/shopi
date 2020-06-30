@@ -25,5 +25,5 @@ public interface ShopApi {
     Call<Shop> createPUT(@Path("id") Long id, @Body Shop shop);
 
     @DELETE("shop/{id}")
-    Call<Void> deleteProduct (@Path("id") Long id);
+    Call<Void> deleteShop (@Path("id") Long id);
 }

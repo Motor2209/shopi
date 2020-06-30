@@ -55,4 +55,8 @@ public class Product {
     public void setOverdueDate(String overdueDate) {
         this.overdueDate = overdueDate;
     }
+
+    public String toString(){
+        return name + ", ";
+    }
 }
