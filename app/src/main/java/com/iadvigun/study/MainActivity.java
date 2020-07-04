@@ -3,18 +3,23 @@ package com.iadvigun.study;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -38,6 +43,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static android.telephony.AvailableNetworkInfo.PRIORITY_HIGH;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
     private Button buttonAlarm;
@@ -149,8 +156,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         View.OnClickListener onClickListenerAddProd = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "You clicked on button Add Product",
-                        Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(MainActivity.this, "You clicked on button Add Product",
+                //        Toast.LENGTH_SHORT).show();
 
                 final Dialog dialog = new Dialog(MainActivity.this);
                 dialog.setContentView(R.layout.dialog_product_layout);
@@ -345,8 +352,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 dialogButtonAccept.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(MainActivity.this, "Addition method",
-                                Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(MainActivity.this, "Addition method",
+                         //       Toast.LENGTH_SHORT).show();
                         String inputedName = editTextName.getText().toString();
                         String inputedLatitude = editTextLatitude.getText().toString();
                         if (inputedLatitude.equals("")) {
@@ -395,7 +402,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        location.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000, 0, this);
+        location.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60000, 0, this);
 
 
         loadAlarmsFromPhoneMemory();
@@ -405,8 +412,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         loadNotEditedProductsFromPhoneMemory();
         loadNotDeletedShopsFromPhoneMemory();
         loadNotEditedShopsFromPhoneMemory();
-        notEditedProductsInDB.clear();
-        notDeletedProductsInDB.clear();
         initRetrofit();
         updateAllDataFromDB();
         makeAlarmNearTheShop();
@@ -419,7 +424,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     }
 
-   /* public void createChannelIfNeeded(NotificationManager manager) {
+    public void createChannelIfNeeded(NotificationManager manager) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = new NotificationChannel(ChannelId, ChannelId, NotificationManager.IMPORTANCE_DEFAULT);
             manager.createNotificationChannel(notificationChannel);
@@ -444,7 +449,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                         .setPriority(PRIORITY_HIGH);
         createChannelIfNeeded(notificationManager);
         notificationManager.notify(NOTIFY_ID, notBilder.build());
-    }*/
+    }
 
     public void makeAlarmNearTheShop() {
         new Thread(new Runnable() {
@@ -472,7 +477,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                         }
                     }
                     if (AreYouNearTheShop()) {
-                        //   createNotificationMessage();
+                           createNotificationMessage();
                         alarmMessage.setText("You are near the shop " + nearestShop.getName() + "!\n"
                                 + "You can by your " + alarmListFromDB.size() +
                                 " overdue products here :)");
@@ -534,7 +539,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 alarmListFromDB.clear();
                 alarmListFromDB.addAll(list);
                 saveAlarmsToPhoneMemory();
-                textResult.append("Loaded shops from DB");
+                textResult.append("Loaded alarms from DB");
             }
 
             @Override
@@ -899,7 +904,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         actualLongitude = location.getLongitude();
         actualLatitude = location.getLatitude();
         String coordinatess = "long: " + String.valueOf(actualLongitude) + " lat: " + String.valueOf(actualLatitude);
-        // coordinates.setText(coordinatess);
+       // coordinates.setText(coordinatess);
 
     }
 
@@ -996,8 +1001,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         String json = gson.toJson(shopListFromDB);
         editor.putString("shopList", json);
         editor.apply();
-        Toast.makeText(MainActivity.this, "saved shops to Phone!",
-                Toast.LENGTH_SHORT).show();
+      //  Toast.makeText(MainActivity.this, "saved shops to Phone!",
+        //        Toast.LENGTH_SHORT).show();
     }
 
     public void loadShopsFromPhoneMemory() {
@@ -1010,11 +1015,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         if (shopListFromDB == null) {
             shopListFromDB = new ArrayList<>();
-            Toast.makeText(MainActivity.this, "loaded null list",
-                    Toast.LENGTH_SHORT).show();
+           // Toast.makeText(MainActivity.this, "loaded null list",
+             //       Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(MainActivity.this, "loaded list shops correctly",
-                    Toast.LENGTH_SHORT).show();
+          //  Toast.makeText(MainActivity.this, "loaded list shops correctly",
+            //        Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -1099,8 +1104,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         String json = gson.toJson(notDeletedShopsInDB);
         editor.putString("shopNotDeletedFromDB", json);
         editor.apply();
-        Toast.makeText(MainActivity.this, "saved  non deleted shops to Phone!",
-                Toast.LENGTH_SHORT).show();
+       // Toast.makeText(MainActivity.this, "saved  non deleted shops to Phone!",
+         //       Toast.LENGTH_SHORT).show();
     }
 
     public void loadNotDeletedShopsFromPhoneMemory() {
@@ -1113,11 +1118,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         if (notDeletedShopsInDB == null) {
             notDeletedShopsInDB = new ArrayList<>();
-            Toast.makeText(MainActivity.this, "loaded null list",
-                    Toast.LENGTH_SHORT).show();
+          //  Toast.makeText(MainActivity.this, "loaded null list",
+            //        Toast.LENGTH_SHORT).show();
         }
-        Toast.makeText(MainActivity.this, "loaded list notDELETED shops correctly",
-                Toast.LENGTH_SHORT).show();
+        //Toast.makeText(MainActivity.this, "loaded list notDELETED shops correctly",
+          //      Toast.LENGTH_SHORT).show();
     }
 
     public void saveNotEditedShopsToPhoneMemory() {
@@ -1127,8 +1132,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         String json = gson.toJson(notEditedShopsInDB);
         editor.putString("shopNotEditedFromDB", json);
         editor.apply();
-        Toast.makeText(MainActivity.this, "saved  non edited shops to Phone!",
-                Toast.LENGTH_SHORT).show();
+      //  Toast.makeText(MainActivity.this, "saved  non edited shops to Phone!",
+        //        Toast.LENGTH_SHORT).show();
     }
 
     public void loadNotEditedShopsFromPhoneMemory() {
@@ -1141,11 +1146,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         if (notEditedShopsInDB == null) {
             notEditedShopsInDB = new ArrayList<>();
-            Toast.makeText(MainActivity.this, "loaded null list",
-                    Toast.LENGTH_SHORT).show();
+          //  Toast.makeText(MainActivity.this, "loaded null list",
+            //        Toast.LENGTH_SHORT).show();
         }
-        Toast.makeText(MainActivity.this, "loaded list notEDITED shop correctly",
-                Toast.LENGTH_SHORT).show();
+        //Toast.makeText(MainActivity.this, "loaded list notEDITED shop correctly",
+          //      Toast.LENGTH_SHORT).show();
     }
 
     public void scannerNotActualisedDataToDB() {

@@ -5,5 +5,5 @@
     <string name="search">search</string>
     <string name="rezult_isHere" />
     <string name="rezultat">rezultat</string>
-    <string name="baseURL">"https://2b188366df8e.ngrok.io"</string>
+    <string name="baseURL">"https://shopi-motor.herokuapp.com"</string>
 </resources>

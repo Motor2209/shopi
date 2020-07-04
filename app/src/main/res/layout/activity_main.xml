@@ -85,14 +85,6 @@
         android:textColor="#E1DCDB" />
 
     <TextView
-        android:id="@+id/textView2"
-        android:layout_width="349dp"
-        android:layout_height="20dp"
-        android:layout_gravity="bottom"
-        android:text="server: "
-        android:textColor="#E1DCDB" />
-
-    <TextView
         android:id="@+id/textCoord"
         android:layout_width="349dp"
         android:layout_height="wrap_content"
@@ -119,6 +111,14 @@
         android:layout_marginTop="150dp"
         android:textColor="#F4C807"
         android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="349dp"
+        android:layout_height="20dp"
+        android:layout_gravity="bottom"
+        android:text="server: "
+        android:textColor="#E1DCDB" />
 
     <ImageView
         android:id="@+id/imageShopiMain"

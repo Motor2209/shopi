@@ -155,8 +155,8 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ProductL
             buttonDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(parent, "Delete method" + getAdapterPosition(),
-                            Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(parent, "Delete method" + getAdapterPosition(),
+                      //      Toast.LENGTH_SHORT).show();
                     String Name = list.get(getAdapterPosition()).getName();
                     int Amount = list.get(getAdapterPosition()).getAmount();
                     int Expiration = list.get(getAdapterPosition()).getExpiration();
@@ -176,8 +176,8 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ProductL
             buttonEditView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(parent, "You clicked on button edit",
-                            Toast.LENGTH_SHORT).show();
+                  //  Toast.makeText(parent, "You clicked on button edit",
+                    //        Toast.LENGTH_SHORT).show();
 
                     final Dialog dialog = new Dialog(parent);
                     dialog.setContentView(R.layout.dialog_product_layout);
@@ -281,8 +281,8 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ProductL
                     dialogButtonAccept.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Toast.makeText(parent, "Edition method" + getAdapterPosition(),
-                                    Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(parent, "Edition method" + getAdapterPosition(),
+                             //       Toast.LENGTH_SHORT).show();
                             String inputedName = editTextName.getText().toString();
                             list.get(getAdapterPosition()).setName(inputedName);
                             String inputedAmount = editTextAmount.getText().toString();
@@ -328,8 +328,8 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ProductL
                 @Override
                 public void onClick(View v) {
                     int position = getAdapterPosition();
-                    Toast.makeText(parent, "You clicked on toast" + position,
-                            Toast.LENGTH_SHORT).show();
+                 //   Toast.makeText(parent, "You clicked on toast" + position,
+                   //         Toast.LENGTH_SHORT).show();
                 }
             });
         }
